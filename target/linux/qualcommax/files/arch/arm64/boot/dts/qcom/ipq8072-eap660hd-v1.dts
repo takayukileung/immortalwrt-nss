@@ -4,6 +4,7 @@
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
 #include "ipq8074-nss.dtsi"
 
@@ -17,6 +18,7 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
+
 		led-boot = &led_status_blue;
 		led-failsafe = &led_status_blue;
 		led-running = &led_status_blue;
@@ -49,10 +51,6 @@
 	};
 };
 
-&blsp1_uart5 {
-	status = "okay";
-};
-
 &tlmm {
 	mdio_pins: mdio-pins {
 		mdc {
@@ -73,19 +71,21 @@
 
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
-	reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	qca8081_28: ethernet-phy@28 {
 		compatible = "ethernet-phy-ieee802.3-c22";
 		reg = <28>;
+		reset-deassert-us = <10000>;
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
 	};
 };
 
 &dp5 {
 	status = "okay";
-	phy-mode = "sgmii";
 	phy-handle = <&qca8081_28>;
 	label = "lan";
 };
@@ -102,14 +102,6 @@
 			port_mac_sel = "QGMAC_PORT";
 		};
 	};
-};
-
-&edma {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &qpic_nand {
@@ -129,5 +121,10 @@
 
 &wifi {
 	status = "okay";
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "TP-Link-EAP660-HD-v1";
+};
+
+&edma {
+	status = "okay";
 };

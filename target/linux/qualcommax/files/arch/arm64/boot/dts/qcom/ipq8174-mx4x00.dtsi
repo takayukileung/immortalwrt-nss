@@ -2,6 +2,7 @@
 
 #include "ipq8074.dtsi"
 #include "ipq8074-ac-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
 #include "ipq8074-nss.dtsi"
 
@@ -13,16 +14,14 @@
 	aliases {
 		serial0 = &blsp1_uart5;
 		serial1 = &blsp1_uart3;
-		/*
-		 * Aliases as required by u-boot
-		 * to patch MAC addresses
-		 */
-		ethernet1 = &dp2;
-		ethernet2 = &dp3;
+
 		led-boot = &led_system_blue;
 		led-running = &led_system_blue;
 		led-failsafe = &led_system_red;
 		led-upgrade = &led_system_green;
+
+		ethernet1 = &dp2;
+		ethernet2 = &dp3;
 	};
 
 	chosen {
@@ -31,8 +30,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		reset-button {
 			label = "reset";
@@ -49,13 +46,6 @@
 };
 
 &tlmm {
-	button_pins: button-state {
-		pins = "gpio52", "gpio67";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-pull-up;
-	};
-
 	mdio_pins: mdio-state {
 		mdc-pins {
 			pins = "gpio68";
@@ -71,26 +61,6 @@
 			bias-pull-up;
 		};
 	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &blsp1_i2c2 {
@@ -131,9 +101,9 @@
 	reset-gpios = <&tlmm 37 GPIO_ACTIVE_LOW>;
 
 	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <0>;
 
 		qca8075_1: ethernet-phy@1 {
@@ -189,17 +159,5 @@
 };
 
 &edma {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&usb_0 {
 	status = "okay";
 };

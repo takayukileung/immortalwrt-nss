@@ -4,6 +4,7 @@
 
 #include "ipq8074.dtsi"
 #include "ipq8074-hk-cpu.dtsi"
+#include "ipq8074-common.dtsi"
 #include "ipq8074-ess.dtsi"
 #include "ipq8074-nss.dtsi"
 
@@ -17,20 +18,19 @@
 
 	aliases {
 		serial0 = &blsp1_uart5;
-		/*
-		 * Aliases as required by u-boot
-		 * to patch MAC addresses
-		 */
+
 		led-boot = &led_system_red;
 		led-failsafe = &led_system_red;
 		led-running = &led_pwr_green;
 		led-upgrade = &led_system_red;
+
 		ethernet0 = &dp1;
 		ethernet1 = &dp2;
 		ethernet2 = &dp3;
 		ethernet3 = &dp4;
 		ethernet4 = &dp5;
 		ethernet5 = &dp6_syn;
+
 		label-mac-device = &dp1;
 	};
 
@@ -40,8 +40,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		wps-button {
 			label = "wps";
@@ -58,8 +56,6 @@
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&leds_pins>;
-		pinctrl-names = "default";
 
 		led_system_green: led-system-green {
 			gpios = <&tlmm 1 GPIO_ACTIVE_HIGH>;
@@ -188,75 +184,14 @@
 			bias-pull-up;
 		};
 	};
-
-	button_pins: button-state {
-		mux {
-			pins = "gpio57", "gpio67";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	leds_pins: leds-state {
-		mux {
-			pins = "gpio1", "gpio3", "gpio4", "gpio6", "gpio7", "gpio8", "gpio11", "gpio12", "gpio13", "gpio14", "gpio15", "gpio42", "gpio51", "gpio52", "gpio54", "gpio56";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-down;
-		};
-	};
-};
-
-&blsp1_uart5 {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_1 {
-	status = "okay";
-};
-
-&qusb_phy_1 {
-	status = "okay";
-};
-
-&usb_0 {
-	status = "okay";
-};
-
-&usb_1 {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
 };
 
 &blsp1_spi1 {
+	status = "okay";
+
 	pinctrl-0 = <&spi_0_pins>;
 	pinctrl-names = "default";
 	cs-gpios = <0>;
-	status = "okay";
 
 	flash@0 {
 		#address-cells = <1>;
@@ -389,9 +324,9 @@
 	};
 
 	ethernet-phy-package@16 {
+		compatible = "qcom,qca8075-package";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		compatible = "qcom,qca8075-package";
 		reg = <16>;
 
 		qcom,package-mode = "qsgmii";
@@ -445,24 +380,29 @@
 			port_id = <1>;
 			phy_address = <16>;
 		};
+
 		port@1 {
 			port_id = <2>;
 			phy_address = <17>;
 		};
+
 		port@2 {
 			port_id = <3>;
 			phy_address = <18>;
 		};
+
 		port@3 {
 			port_id = <4>;
 			phy_address = <19>;
 		};
+
 		port@4 {
 			port_id = <5>;
 			phy_address = <8>;
 			compatible = "ethernet-phy-ieee802.3-c45";
 			ethernet-phy-ieee802.3-c45;
 		};
+
 		port@5 {
 			port_id = <6>;
 			phy_address = <0>;
@@ -470,10 +410,6 @@
 			ethernet-phy-ieee802.3-c45;
 		};
 	};
-};
-
-&edma {
-	status = "okay";
 };
 
 &dp1 {
@@ -521,6 +457,10 @@
 
 &wifi {
 	status = "okay";
-
+	qcom,ath11k-fw-memory-mode = <1>;
 	qcom,ath11k-calibration-variant = "QNAP-301w";
+};
+
+&edma {
+	status = "okay";
 };

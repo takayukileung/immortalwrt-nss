@@ -3,9 +3,10 @@
 /dts-v1/;
 
 #include "ipq6018-512m.dtsi"
-#include "ipq6018-fixed-smps.dtsi"
+#include "ipq6018-common.dtsi"
 #include "ipq6018-ess.dtsi"
 #include "ipq6018-nss.dtsi"
+#include "ipq6000-fix-cpufreq.dtsi"
 
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
@@ -17,6 +18,7 @@
 
 	aliases {
 		serial0 = &blsp1_uart3;
+
 		led-boot = &led_status_orange;
 		led-failsafe = &led_status_red;
 		led-running = &led_status_green;
@@ -35,8 +37,6 @@
 
 	keys {
 		compatible = "gpio-keys";
-		pinctrl-0 = <&button_pins>;
-		pinctrl-names = "default";
 
 		wps {
 			label = "wps";
@@ -53,8 +53,6 @@
 
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-0 = <&leds_pins>;
-		pinctrl-names = "default";
 
 		led_status_red: red {
 			label = "red:status";
@@ -74,24 +72,6 @@
 };
 
 &tlmm {
-	button_pins: button-pins {
-		mux {
-			pins = "gpio19", "gpio68";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-up;
-		};
-	};
-
-	leds_pins: leds-pins {
-		mux {
-			pins = "gpio71", "gpio72", "gpio73";
-			function = "gpio";
-			drive-strength = <8>;
-			bias-pull-down;
-		};
-	};
-
 	mdio_pins: mdio-pins {
 		mdc {
 			pins = "gpio64";
@@ -109,30 +89,54 @@
 	};
 };
 
+&qpic_nand {
+	status = "okay";
+
+	nand@0 {
+		reg = <0>;
+
+		nand-ecc-strength = <4>;
+		nand-ecc-step-size = <512>;
+		nand-bus-width = <8>;
+
+		partitions {
+			compatible = "qcom,smem-part";
+		};
+	};
+};
+
 &mdio {
 	status = "okay";
+
 	pinctrl-0 = <&mdio_pins>;
 	pinctrl-names = "default";
 	reset-gpios = <&tlmm 75 GPIO_ACTIVE_LOW>;
 
-	qca8075_0: ethernet-phy@0 {
-		compatible = "ethernet-phy-ieee802.3-c22";
+	ethernet-phy-package@0 {
+		compatible = "qcom,qca8075-package";
+		#address-cells = <1>;
+		#size-cells = <0>;
 		reg = <0>;
-	};
 
-	qca8075_1: ethernet-phy@1 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <1>;
-	};
+		qca8075_0: ethernet-phy@0 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <0>;
+		};
 
-	qca8075_2: ethernet-phy@2 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <2>;
-	};
+		qca8075_1: ethernet-phy@1 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <1>;
+		};
 
-	qca8075_3: ethernet-phy@3 {
-		compatible = "ethernet-phy-ieee802.3-c22";
-		reg = <3>;
+		qca8075_2: ethernet-phy@2 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <2>;
+		};
+
+		qca8075_3: ethernet-phy@3 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <3>;
+		};
 	};
 };
 
@@ -142,8 +146,6 @@
 	switch_lan_bmp = <(ESS_PORT1 | ESS_PORT2 | ESS_PORT3)>;
 	switch_wan_bmp = <ESS_PORT4>;
 	switch_mac_mode = <MAC_MODE_PSGMII>;
-	switch_mac_mode1 = <MAC_MODE_DISABLED>;
-	switch_mac_mode2 = <MAC_MODE_DISABLED>;
 
 	qcom,port_phyinfo {
 		port@1 {
@@ -168,29 +170,6 @@
 	};
 };
 
-&blsp1_uart3 {
-	status = "okay";
-
-	pinctrl-0 = <&serial_3_pins>;
-	pinctrl-names = "default";
-};
-
-&qpic_nand {
-	status = "okay";
-
-	nand@0 {
-		reg = <0>;
-
-		nand-ecc-strength = <4>;
-		nand-ecc-step-size = <512>;
-		nand-bus-width = <8>;
-
-		partitions {
-			compatible = "qcom,smem-part";
-		};
-	};
-};
-
 &wifi {
 	status = "okay";
 
@@ -202,7 +181,7 @@
 	status = "okay";
 
 	phy-handle = <&qca8075_0>;
-	label = "lan3";
+	label = "lan1";
 };
 
 &dp2 {
@@ -216,7 +195,7 @@
 	status = "okay";
 
 	phy-handle = <&qca8075_2>;
-	label = "lan1";
+	label = "lan3";
 };
 
 &dp4 {
@@ -227,41 +206,5 @@
 };
 
 &edma {
-	status = "okay";
-};
-
-&prng {
-	status = "okay";
-};
-
-&cryptobam {
-	status = "okay";
-};
-
-&crypto {
-	status = "okay";
-};
-
-&qpic_bam {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "okay";
-};
-
-&ssphy_0 {
-	status = "okay";
-};
-
-&qusb_phy_0 {
-	status = "ok";
-};
-
-&usb2 {
-	status = "okay";
-};
-
-&usb3 {
 	status = "okay";
 };
