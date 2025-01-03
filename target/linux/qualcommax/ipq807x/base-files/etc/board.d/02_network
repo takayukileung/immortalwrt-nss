@@ -27,7 +27,6 @@ ipq807x_setup_interfaces()
 		ucidef_set_interfaces_lan_wan "lan plc" "wan"
 		;;
 	compex,wpq873|\
-	linksys,homewrk|\
 	linksys,mx4200v1|\
 	linksys,mx4200v2|\
 	linksys,mx4300|\
@@ -49,6 +48,7 @@ ipq807x_setup_interfaces()
 	edimax,cax1800|\
 	netgear,wax218|\
 	netgear,wax620|\
+	tplink,eap620hd-v1|\
 	tplink,eap660hd-v1)
 		ucidef_set_interface_lan "lan" "dhcp"
 		;;
@@ -97,6 +97,7 @@ ipq807x_setup_macs()
 			lan_mac=$(macaddr_add $label_mac 1)
 			wan_mac=$label_mac
 		;;
+		tplink,eap620hd-v1|\
 		tplink,eap660hd-v1)
 			label_mac=$(get_mac_binary /tmp/factory_data/default-mac 0)
 			lan_mac=$label_mac
